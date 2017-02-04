@@ -1,0 +1,17 @@
+<!doctype html>
+<html>
+<head>
+  <title>Messages</title>
+  <script src="{{ url_for('static', filename='jquery.js') }}"></script>
+  <script src="{{ url_for('static', filename='form_text.js') }}"></script>
+  
+</head>
+<body>
+    <form>
+        <input type="text" id="textInput" name="textInput" placeholder="Your message">
+        <input type="submit" value="Done">
+    </form>
+    <br><br>
+    <div id="alltexts"></div>
+</body>
+</html>
