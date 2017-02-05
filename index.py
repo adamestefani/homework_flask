@@ -15,11 +15,13 @@ def comment():
 @app.route('/allcomment', methods=['POST'])
 def allcomment():
     
-    #Text sent by form
+    #Data sent by html form
     new_text = request.form['textInput']
+    new_user_name = request.form['userName']
     
     #Calling REST
-    response_text = requests.get('http://localhost:8080/text/'+new_text)
+    response_text = requests.get('http://localhost:8080/text/'+new_text+'/user/'+new_user_name)
+    #print('response REST --- '+response_text.text)
     
     return response_text.text
     
