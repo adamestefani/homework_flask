@@ -14,25 +14,25 @@ def connection_db():
 def insert_new_comment(row):
     
     #Parameter "row" is an array of fields
-    # 0 = new text
     text = row[0]
-    
-    # 1 = user name
     user_name = row[1]
-    
-    # 2 = parent id
     parent_id = row[2]
+    longiture = row[3]
+    latutide = row[4]
+    temperature = row[5]
+    city = row[6]
     
     
     #Current date and time formatted as YYYY-MM-DD HH:MI
     dttm = datetime.now().strftime("%Y-%m-%d %H:%M")
     
     #Prepare new row to insert into table
-    new_row = (text, user_name, dttm, parent_id)
+    new_row = (text, user_name, dttm, parent_id, longiture, latutide, temperature, city)
     
     #Temporary instance "g" to connect with DB
     cursor = connection_db()
-    cursor.execute("insert into comments (text, username, dttm, parentid) values (?, ?, ?, ?)", new_row)
+    cursor.execute("insert into comments (text, username, dttm, parentid, longiture, latutide, temperature, city)"\
+                   " values (?, ?, ?, ?, ?, ?, ?, ?)", new_row)
     cursor.commit()
     cursor.close()
 
@@ -61,18 +61,19 @@ def select_all_comments_and_responses():
     #Creating query string
     #Return all field and level of comment (depth = textlevel)
     query_string =  "WITH RECURSIVE commenttree AS "
-    query_string = query_string + "(SELECT rowid, text, username, dttm, parentid, "
-    query_string = query_string + "dttm As item_path "
+    query_string = query_string + "(SELECT rowid, text, username, dttm, parentid, longiture, latutide, temperature, "
+    query_string = query_string + "city, dttm As item_path "
     query_string = query_string + "FROM comments "
     query_string = query_string + "WHERE parentid IS NULL or parentid = 0 "
     query_string = query_string + "UNION ALL "
     query_string = query_string + "SELECT child.rowid, child.text, child.username, child.dttm, child.parentid, "
+    query_string = query_string + "child.longiture, child.latutide, child.temperature, child.city, "
     query_string = query_string + "tree.item_path||'->'||child.dttm As item_path "
     query_string = query_string + "FROM comments As child "
     query_string = query_string + "INNER JOIN commenttree AS tree "
     query_string = query_string + "ON (child.parentid = tree.rowid) "
     query_string = query_string + ") "
-    query_string = query_string + "SELECT rowid, text, username, dttm, "
+    query_string = query_string + "SELECT rowid, text, username, dttm, longiture, latutide, temperature, city, "
     query_string = query_string + "(length(item_path) - length(replace(item_path,'->', ' ')) +1) as textlevel "
     query_string = query_string + "FROM commenttree "
     query_string = query_string + "ORDER BY item_path"
@@ -86,7 +87,11 @@ def select_all_comments_and_responses():
         'text' : str(row[1]),
         'username' : str(row[2]),
         'datetime' : str(row[3]),
-        'textlevel' : row[4]
+        'longitude' : str(row[4]),
+        'latitude' : str(row[5]),
+        'temperature' : str(row[6]),
+        'city' : str(row[7]),
+        'textlevel' : row[8]
     } for row in records.fetchall()]
     
     cursor.close()

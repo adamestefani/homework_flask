@@ -1,5 +1,6 @@
 from flask import Flask, request, jsonify
 import dbcontroller
+import weather
 
 
 #start the app
@@ -8,13 +9,23 @@ app = Flask(__name__)
 #rest to receive and return the same text
 @app.route('/text/<string:text>', methods=['GET'])
 @app.route('/text/<string:text>/user/<string:user_name>', methods=['GET'])
-@app.route('/text/<string:text>/user/<string:user_name>/parentid/', methods=['GET'])
 @app.route('/text/<string:text>/user/<string:user_name>/parentid/<int:parent_id>', methods=['GET'])
-def return_text(text, user_name=None, parent_id=None):
+@app.route('/text/<string:text>/user/<string:user_name>/parentid/<int:parent_id>/city/<string:city>', methods=['GET'])
+def return_text(text, user_name=None, parent_id=0, city=None):
     
+	#Get weather info
+    if (city != None):
+        response_weather = weather.info(city)
+        longitude = response_weather['longitude']
+        latitude = response_weather['latitude']
+        temperature = response_weather['temperature']
+
+
+    #print('weather return: '+str(response_weather))
+
     #Insert new comment into DB
     #Parameter must be an array of fields
-    dbcontroller.insert_new_comment([text, user_name, parent_id])
+    dbcontroller.insert_new_comment([text, user_name, parent_id, longitude, latitude, temperature, city])
     
     #posts = dbcontroller.select_all_comments()
     posts = dbcontroller.select_all_comments_and_responses()

@@ -10,7 +10,8 @@ $(document).on('click', '.send-reply-comment', function(event){
            dataType : 'html',
            data : { textInput : $('#textInput'+currentPostId).val(),
                     userName : $('#userName'+currentPostId).val(),
-                    parentId : $('#postId'+currentPostId).val()
+                    parentId : $('#postId'+currentPostId).val(),
+                    city : $('#cityInput'+currentPostId).val()
            }
     })
     .done(function(data) {
@@ -53,15 +54,22 @@ $(document).on('click', '.send-reply-comment', function(event){
                   new_item = '';
               }
 
+              var degree = String.fromCharCode(176);
+
               //Populate posts
               new_item = new_item + '<li>' +
                   '<b>' + value.username + '</b> - ' +
+                  value.city +
+                  ' (' + value.latitude + degree + ' N, ' + 
+                  value.longitude + degree + ' W' + 
+                  ') - Weather: ' + value.temperature + degree + ' C - ' +
                   value.datetime + '<br>' +
                   value.text + '<br>' +
                     '<div class="childPost">' +
                       '<input type="hidden" id="postId'+value.postid+'" name="postId" class="postId" value="'+value.postid+'">' +
                       '<input type="text" id="userName'+value.postid+'" name="userName" placeholder="User Name">' +
                       '<input type="text" id="textInput'+value.postid+'" name="textInput" placeholder="Your Message">' +
+                      '<input type="text" id="cityInput'+value.postid+'" name="cityInput" placeholder="Your City">' +
                       '<input type="button" value="Done" id="'+value.postid+'" class="send-reply-comment">' +
                     '</div>';
 
@@ -98,6 +106,7 @@ $(document).on('click', '.send-reply-comment', function(event){
           //Reset fields
           $('#textInput'+currentPostId).val('');
           $('#userName'+currentPostId).val('');
+          $('#cityInput'+currentPostId).val('');
     });
 });
 

@@ -19,14 +19,19 @@ def allcomment():
     new_text = request.form['textInput']
     new_user_name = request.form['userName']
     new_parent_id = request.form['parentId']
+    new_city = request.form['city']
     
+    #Verify parameters
+    if (new_parent_id == None or new_parent_id == ''):
+        new_parent_id = '0'
+
+
     #Calling REST
     #Request string
     request_string = 'http://localhost:8080/text/'+new_text+ \
-        '/user/'+new_user_name+'/parentid/'+new_parent_id
+        '/user/'+new_user_name+'/parentid/'+new_parent_id+'/city/'+new_city
     
     response_text = requests.get(request_string)
-    #print('response REST --- '+response_text.text)
     
     return response_text.text
     
