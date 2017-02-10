@@ -1,31 +1,103 @@
-$(document).ready(function() {
+$(document).on('click', '.send-reply-comment', function(event){    
     
-    $('form').on('submit', function(event) {
-        event.preventDefault();
-        
-        //Call REST
-        $.ajax({
-               type : 'POST',
-               url : '/allcomment',
-               dataType : 'html',
-               data : { textInput : $('#textInput').val(),
-                        userName : $('#userName').val()
-               }
-        })
-        .done(function(data) {
-              var responseJson = $.parseJSON(data);
-              var allPosts = '';
+    //Get postid (father id)
+    var currentPostId = event.target.id;
+    
+    //Call REST
+    $.ajax({
+           type : 'POST',
+           url : '/allcomment',
+           dataType : 'html',
+           data : { textInput : $('#textInput'+currentPostId).val(),
+                    userName : $('#userName'+currentPostId).val(),
+                    parentId : $('#postId'+currentPostId).val()
+           }
+    })
+    .done(function(data) {
+          var responseJson = $.parseJSON(data);
+          var allPosts = '';
+          var previousTextLevel = 0;
+          var new_item = '';
+          var arrayPost = [];
+          
+          //Loop in all comments
+          $(responseJson.posts).each(function(index, value) {
               
-              //Loop in all comments
-              $(responseJson.posts).each(function(index, value) {
-                  allPosts = allPosts + '<b>' + value.username + '</b> - ' +
-                                         value.datetime + '<BR>' +
-                                         value.text + '<BR><BR>';
-              });
-              
-              //Return content to the page
-              //$('#alltexts').text(allPosts).show();
-              $('#alltexts').html(allPosts).show();
-        });
+              //Verify control variable - previous text level
+              if (previousTextLevel == 0) {
+                  previousTextLevel = value.textlevel;
+              };
+
+              //Create indentation
+              if (previousTextLevel < value.textlevel) {
+                  new_item = new_item + '<ul style="list-style-type:none">';
+              }
+
+              //Close indentation
+              if (previousTextLevel > value.textlevel) {
+                  for (i=0;i < (previousTextLevel - value.textlevel); i++) {
+                      new_item = new_item + '</ul>';
+                  }
+              }
+
+              //Verify current post level == original post AND if there is an item
+              if (value.textlevel == 1 && new_item) {
+
+                  //Close item tag
+                  new_item = new_item + '</li><br>';
+
+                  //Add item to array
+                  arrayPost.push(new_item);
+                  
+                  //New item body
+                  new_item = '';
+              }
+
+              //Populate posts
+              new_item = new_item + '<li>' +
+                  '<b>' + value.username + '</b> - ' +
+                  value.datetime + '<br>' +
+                  value.text + '<br>' +
+                    '<div class="childPost">' +
+                      '<input type="hidden" id="postId'+value.postid+'" name="postId" class="postId" value="'+value.postid+'">' +
+                      '<input type="text" id="userName'+value.postid+'" name="userName" placeholder="User Name">' +
+                      '<input type="text" id="textInput'+value.postid+'" name="textInput" placeholder="Your Message">' +
+                      '<input type="button" value="Done" id="'+value.postid+'" class="send-reply-comment">' +
+                    '</div>';
+
+              //Update control variable
+              previousTextLevel = value.textlevel;
+          });
+          
+          //Verify last post: Close indentation
+          if (previousTextLevel > 1) {
+              for (i=0;i < (previousTextLevel - 1); i++) {
+                  new_item = new_item + '</ul>';
+              }
+          }
+
+          //Verify last post: if there is an item
+          if (new_item) {
+
+              //Close item tag
+              new_item = new_item + '</li><br>';
+
+              //Add item to array
+              arrayPost.push(new_item);
+          }
+
+          //Populate posts from newest to older
+          for (i=arrayPost.length; i>0; i--) {
+              allPosts = allPosts + arrayPost[i-1];
+          }
+
+          //Return content to the page
+          $("#commentItems").html(allPosts);
+          $('#alltexts').show();
+          
+          //Reset fields
+          $('#textInput'+currentPostId).val('');
+          $('#userName'+currentPostId).val('');
     });
 });
+

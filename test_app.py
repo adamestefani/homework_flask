@@ -7,13 +7,15 @@ import index
 class AppTestCases(unittest.TestCase):
     
     #Content for testing
-    test_sample = ['hello world', 'this is 1 message', '123 and 456']
+    sample_text = ['hello world', 'this is 1 message', '123 and 456']
+    sample_user = ['Tester', 'Joe', 'Tom']
+    sample_parent_id = [0, 1, 2]
     
     #Ensure that REST is returning properly
     def test_service(self):
         tester = textcontroller.app.test_client(self)
         
-        for sample in self.test_sample:
+        for sample in self.sample_text:
             response = tester.get('/text/'+sample)
             self.assertTrue(sample in response.data)
 
@@ -29,14 +31,21 @@ class AppTestCases(unittest.TestCase):
     def test_form_return(self):
         tester = index.app.test_client(self)
         
-        for sample in self.test_sample:
+        for sample_index in range(len(self.sample_text)):
+
+            text = self.sample_text[sample_index]
+            user = self.sample_user[sample_index]
+            parent_id = self.sample_parent_id[sample_index]
+
             response = tester.post(
                 '/allcomment',
-                data=dict(textInput=sample),
+                data=dict(textInput=text, userName=user, parentId=parent_id),
                 follow_redirects=True
             )
-            self.assertIn(sample, response.data)
+            self.assertIn(text, response.data)
 
+
+    #Ensure 
 
 if __name__ == '__main__':
     unittest.main()

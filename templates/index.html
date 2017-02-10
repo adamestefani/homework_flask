@@ -4,15 +4,20 @@
   <title>Messages</title>
   <script src="{{ url_for('static', filename='jquery.js') }}"></script>
   <script src="{{ url_for('static', filename='form_text.js') }}"></script>
-  
 </head>
 <body>
-    <form>
+    <form class="form_comment" id="formComment">
+        <input type="hidden" id="postId" name="postId" class="postId" value="">
         <input type="text" id="userName" name="userName" placeholder="User Name">
         <input type="text" id="textInput" name="textInput" placeholder="Your Message">
-        <input type="submit" value="Done">
-    </form>
+
+        <input type="button" value="Done" id="" class="send-reply-comment">
     <br><br>
-    <div id="alltexts"></div>
+    <div id="alltexts" style="display:none">
+        <ul style="list-style-type:none" id="commentItems">
+        </ul>
+    </div>
+    </form>
+    
 </body>
 </html>

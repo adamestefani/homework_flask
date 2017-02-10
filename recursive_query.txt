@@ -1,0 +1,35 @@
+—1
+WITH RECURSIVE commenttree AS 
+(SELECT rowid, text, username, dttm, parentid, 
+dttm||' '||text As item_path 
+FROM comments 
+WHERE parentid IS NULL 
+UNION ALL 
+SELECT child.rowid, child.text, child.username, child.dttm, child.parentid, 
+tree.item_path||'->'||child.text As item_path 
+FROM comments As child 
+INNER JOIN commenttree AS tree 
+ON (child.parentid = tree.rowid) ) 
+SELECT  rowid, text, username, dttm,
+(length(item_path) - length(replace(item_path,'->', ' ')) +1) as textlevel 
+FROM commenttree 
+ORDER BY item_path
+
+
+—2
+WITH RECURSIVE commenttree AS 
+(SELECT rowid, text, username, dttm, parentid, 
+dttm As item_path 
+FROM comments 
+WHERE parentid IS NULL or parentid = 0
+UNION ALL 
+SELECT child.rowid, child.text, child.username, child.dttm, child.parentid, 
+tree.item_path||'->'||child.dttm As item_path 
+FROM comments As child 
+INNER JOIN commenttree AS tree 
+ON (child.parentid = tree.rowid) ) 
+SELECT  rowid, text, username, dttm,
+(length(item_path) - length(replace(item_path,'->', ' ')) +1) as textlevel 
+FROM commenttree 
+ORDER BY item_path
+
