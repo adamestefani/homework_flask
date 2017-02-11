@@ -5,6 +5,10 @@ import requests
 #start the app
 app = Flask(__name__)
 
+#Set certificate
+context = ('server.crt', 'server.key')
+
+
 #first page
 @app.route('/comment', methods=['GET'])
 def comment():
@@ -28,14 +32,15 @@ def allcomment():
 
     #Calling REST
     #Request string
-    request_string = 'http://localhost:8080/text/'+new_text+ \
+    request_string = 'https://localhost:8080/text/'+new_text+ \
         '/user/'+new_user_name+'/parentid/'+new_parent_id+'/city/'+new_city
     
-    response_text = requests.get(request_string)
+    response_text = requests.get(request_string, verify=False)
     
     return response_text.text
     
 
 #run app
 if __name__ == "__main__":
-    app.run(debug=True)
+
+    app.run(host='127.0.0.1', port=5000, ssl_context=context, threaded=True, debug=True)

@@ -6,6 +6,10 @@ import weather
 #start the app
 app = Flask(__name__)
 
+#Set certificate
+context = ('server.crt', 'server.key')
+
+
 #rest to receive and return the same text
 @app.route('/text/<string:text>', methods=['GET'])
 @app.route('/text/<string:text>/user/<string:user_name>', methods=['GET'])
@@ -21,20 +25,20 @@ def return_text(text, user_name=None, parent_id=0, city=None):
         temperature = response_weather['temperature']
 
 
-    #print('weather return: '+str(response_weather))
-
     #Insert new comment into DB
     #Parameter must be an array of fields
     dbcontroller.insert_new_comment([text, user_name, parent_id, longitude, latitude, temperature, city])
     
-    #posts = dbcontroller.select_all_comments()
     posts = dbcontroller.select_all_comments_and_responses()
     
+    print(str(posts))
+
     #return text as JSON
     return jsonify({'posts' : posts})
 
 #run app
 if __name__ == "__main__":
-    app.run(debug=True, port=8080)
+    
+    app.run(host='127.0.0.1', port=8080, ssl_context=context, threaded=True, debug=True)
 
 
