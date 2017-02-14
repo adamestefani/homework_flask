@@ -19,12 +19,12 @@ ORDER BY item_path
 —2
 WITH RECURSIVE commenttree AS 
 (SELECT rowid, text, username, dttm, parentid, 
-dttm As item_path 
+dttm||rowid As item_path 
 FROM comments 
 WHERE parentid IS NULL or parentid = 0
 UNION ALL 
 SELECT child.rowid, child.text, child.username, child.dttm, child.parentid, 
-tree.item_path||'->'||child.dttm As item_path 
+tree.item_path||'->'||child.dttm||child.rowid As item_path 
 FROM comments As child 
 INNER JOIN commenttree AS tree 
 ON (child.parentid = tree.rowid) ) 
