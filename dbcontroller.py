@@ -19,7 +19,7 @@ def insert_new_comment(row):
     parent_id = row[2]
     longiture = row[3]
     latutide = row[4]
-    temperature = row[5]
+    temperature = round(row[5])
     city = row[6]
     
     
@@ -81,6 +81,9 @@ def select_all_comments_and_responses():
     #open connection with DB
     cursor = connection_db()
     records = cursor.execute(query_string)
+
+    #Charset
+    charset = "utf-8"
 
     #Convert records to dictionary
     posts = [{'postid' : str(row[0]),

@@ -14,7 +14,7 @@ context = ('server.crt', 'server.key')
 @app.route('/text/<string:text>', methods=['GET'])
 @app.route('/text/<string:text>/user/<string:user_name>', methods=['GET'])
 @app.route('/text/<string:text>/user/<string:user_name>/parentid/<int:parent_id>', methods=['GET'])
-@app.route('/text/<string:text>/user/<string:user_name>/parentid/<int:parent_id>/city/<string:city>', methods=['GET'])
+@app.route('/text/<path:text>/user/<path:user_name>/parentid/<int:parent_id>/city/<path:city>', methods=['GET'])
 def return_text(text, user_name=None, parent_id=0, city=None):
     
 	#Get weather info
@@ -23,16 +23,15 @@ def return_text(text, user_name=None, parent_id=0, city=None):
         longitude = response_weather['longitude']
         latitude = response_weather['latitude']
         temperature = response_weather['temperature']
+        city_name = response_weather['city_name']
 
 
     #Insert new comment into DB
     #Parameter must be an array of fields
-    dbcontroller.insert_new_comment([text, user_name, parent_id, longitude, latitude, temperature, city])
+    dbcontroller.insert_new_comment([text, user_name, parent_id, longitude, latitude, temperature, city_name])
     
     posts = dbcontroller.select_all_comments_and_responses()
     
-    print(str(posts))
-
     #return text as JSON
     return jsonify({'posts' : posts})
 

@@ -20,7 +20,8 @@ def info(city):
 		latitude = json_info['coord']['lat']
 		longitude = json_info['coord']['lon']
 		temperature = json_info['main']['temp']
+		city_name = json_info['name']
 
 	
 	#Return a dictionary
-	return (dict(latitude=latitude, longitude=longitude, temperature=temperature))
+	return (dict(latitude=latitude, longitude=longitude, temperature=temperature, city_name=city_name))
